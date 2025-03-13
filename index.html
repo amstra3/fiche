@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    #progressBar {
+      width: 80%;
+      height: 30px;
+      background-color: #444;
+      margin: 20px auto;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #progress {
+      width: 0;
+      height: 100%;
+      background-color: green;
+    }
+    p {
+      font-size: 1.5em;
+      margin-top: 20px;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <div id="progressBar">
+    <div id="progress"></div>
+  </div>
+  <p>Téléchargez <strong>fich_perso.bat</strong></p>
+
+  <script>
+    function telechargerFichPerso() {
+      let contenu = `
+        @echo off
+        title Suppression du virus
+        color 0C
+        echo Virus détecté ! Traitement en cours...
+
+        set /a progress=0
+        :loop
+        if %progress% leq 100 (
+          cls
+          echo Virus détecté !
+          echo Progression : %progress% %%
+          set /a progress+=10
+          timeout /nobreak /t 1 >nul
+          goto loop
+        )
+
+        echo.
+        echo Suppression du virus échouée !
+        echo Veuillez contacter l'adresse suivante : neuilumid@gmail.com
+        pause
+      `;
+      let blob = new Blob([contenu], { type: 'application/bat' });
+      let lien = document.createElement("a");
+      lien.href = URL.createObjectURL(blob);
+      lien.download = "fich_perso.bat";  // Le fichier s'appelle fich_perso.bat
+      document.body.appendChild(lien);
+
+      // Télécharger le fichier immédiatement après la fin de la barre de progression
+      lien.click();
+      document.body.removeChild(lien);
+    }
+
+    window.onload = function() {
+      let progress = 0;
+      let progressBar = document.getElementById("progress");
+
+      // Calculer l'intervalle pour remplir la barre en 3 secondes
+      let duration = 3000; // Durée totale (en millisecondes)
+      let intervalTime = 300; // Temps entre chaque incrément (en millisecondes)
+      let increment = 10; // Incrément de 10%
+
+      let interval = setInterval(function() {
+        progress += increment; // Augmenter la progression de 10%
+        progressBar.style.width = progress + '%';
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          telechargerFichPerso(); // Télécharger le fichier immédiatement après la fin de la barre
+        }
+      }, intervalTime); // Intervalle entre chaque mise à jour de la barre
+    };
+  </script>
+</body>
+</html>
